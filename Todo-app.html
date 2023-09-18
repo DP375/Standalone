@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="Todo-css.css" />
+  </head>
+
+  <body>
+    <div id="myDIV" class="header">
+      <h2 style="margin: 5px">My To Do List</h2>
+      <input type="text" id="myInput" placeholder="Type your to-do..." />
+      <span class="add-btn">Add</span>
+    </div>
+
+    <ul id="myUL"></ul>
+
+    <button id="clearList">Clear List</button>
+
+    <script>
+      $(window).on("load", function () {
+        $.getScript("Todo-script.js", function () {});
+      });
+    </script>
+  </body>
+</html>
