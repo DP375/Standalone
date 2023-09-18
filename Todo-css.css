@@ -119,16 +119,12 @@ input {
 .add-btn:hover {
   background-color: #bbb;
 }
-/* Stil za tekst unutar popup prozora */
-.errorPopup {
-  font-size: 24px; /* Promenite željenu veličinu fonta */
-  margin-bottom: 10px; /* Dodajte razmak ispod teksta */
-}
+
 /* Stil za tekst unutar popup prozora */
 .error-popup {
-  font-size: 24px; /* Promenite željenu veličinu fonta */
-  margin-bottom: 10px; /* Dodajte razmak ispod teksta */
-  background-color: #ff0000; /* Promenite boju pozadine prema želji */
-  color: #fff; /* Promenite boju teksta prema želji */
-  padding: 100px; /* Dodajte padding za unutar popup prozora */
+  font-size: 24px;
+  margin-bottom: 10px;
+  background-color: #ff0000;
+  color: #fff;
+  padding: 100px;
 }
