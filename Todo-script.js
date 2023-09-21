@@ -1,47 +1,43 @@
-// Dodavanje "close" dugmeta za svaku stavku liste
-const SPAN_CLOSE = "<span class='close'>\u00D7</span>";
-var variable = $("#userInput");
+$(document).ready(() => {
+  const SPAN_CLOSE = "<span class='close'>\u00D7</span>";
+  const POPOUP_TIME = 1500;
+  const POPUP_ERROR = "<div class='error-popup'>";
+  const ERROR_MESSAGE = "You must enter something on To-do list";
 
-// Ciljanje <ul> preko klase "todo-list"
-var todoList = $(".todo-list");
+  const todoList = $(".todo-list");
+  todoList.find("li").each((element) => $(element).append(SPAN_CLOSE));
 
-$("li").each(function () {
-  $(this).append(SPAN_CLOSE);
-});
+  todoList.on("click", ".close", (event) => {
+    $(event.currentTarget).parent().toggle();
+  });
 
-// Klik na "close" dugme skriva trenutnu stavku
-todoList.on("click", ".close", function () {
-  $(this).parent().css("display", "none");
-});
+  todoList.on("click", "li", (event) => {
+    $(event.currentTarget).toggleClass("checked");
+  });
 
-// Klik na stavku označava je kao "checked"
-todoList.on("click", "li", function () {
-  $(this).toggleClass("checked");
-});
+  $(".add-btn").click(() => {
+    const INPUT_VALUE = $("#userInput").val();
+    if (!INPUT_VALUE) {
+      showError(ERROR_MESSAGE);
+    } else {
+      var listItem = $("<li>").text(INPUT_VALUE).append(SPAN_CLOSE);
+      $(".todo-list").append(listItem);
+      $("#userInput").val("");
+    }
+  });
 
-// Dodavanje nove stavke na listu
-$(".add-btn").click(function () {
-  var inputValue = variable.val();
-  if (!inputValue) {
-    showError("You must enter something on To-do list.");
-  } else {
-    var listItem = $("<li>").text(inputValue).append(SPAN_CLOSE);
-    todoList.append(listItem);
-    variable.val("");
+  function showError(message) {
+    const ERROR_POPUP = $(POPUP_ERROR).text(message);
+    $("body").append(ERROR_POPUP);
+
+    setTimeout(() => {
+      ERROR_POPUP.fadeOut(() => {
+        $(this).remove();
+      });
+    }, POPOUP_TIME);
   }
-});
 
-function showError(message) {
-  const errorPopup = $("<div class='error-popup'>").text(message);
-  $("body").append(errorPopup);
-
-  setTimeout(function () {
-    errorPopup.fadeOut(function () {
-      $(this).remove();
-    });
-  }, 1500);
-}
-
-$("#clearList").click(function () {
-  todoList.empty();
+  $("#clearList").click(() => {
+    todoList.empty();
+  });
 });
