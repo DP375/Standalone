@@ -8,26 +8,18 @@ $(document).ready(() => {
 
   // Ciljanje <ul> preko klase "todo-list"
   const todoList = $(".todo-list");
-  $(".todoList li").each((element) => $(element).append(SPAN_CLOSE));
-
-  //ili
-  //todoList.find("li").each((element) => $(element).append(SPAN_CLOSE));
+  // $(".todo-list li").each((element) => $(element).append(SPAN_CLOSE));
+  todoList.find("li").each((element) => $(element).append(SPAN_CLOSE));
 
   // Klik na "close" dugme skriva trenutnu stavku
-  todoList.on("click", ".close", function () {
-    $(this).parent().css("display", "none");
+  todoList.on("click", ".close", (event) => {
+    $(event.currentTarget).parent().toggle();
   });
-  // todoList.on("click", ".close", () => {
-  //   $(event.currentTarget).parent().toggle();
-  // });
 
   // Klik na stavku označava je kao "checked"
-  todoList.on("click", "li", function () {
-    $(this).toggleClass("checked");
+  todoList.on("click", "li", (event) => {
+    $(event.currentTarget).toggleClass("checked");
   });
-  // todoList.on("click", "li", () => {
-  //   $(event.currentTarget).toggleClass("checked");
-  // });
 
   // Dodavanje nove stavke na listu
   $(".add-btn").click(() => {
