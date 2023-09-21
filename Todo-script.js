@@ -3,7 +3,6 @@ $(document).ready(() => {
   const POPOUP_TIME = 1500;
   const POPUP_ERROR = "<div class='error-popup'>";
   const ERROR_MESSAGE = "You must enter something on To-do list";
-  const USER_INPUT = $("#userInput");
 
   const todoList = $(".todo-list");
   todoList.find("li").each((element) => $(element).append(SPAN_CLOSE));
@@ -17,13 +16,13 @@ $(document).ready(() => {
   });
 
   $(".add-btn").click(() => {
-    const INPUT_VALUE = USER_INPUT.val();
+    const INPUT_VALUE = $("#userInput").val();
     if (!INPUT_VALUE) {
       showError(ERROR_MESSAGE);
     } else {
       var listItem = $("<li>").text(INPUT_VALUE).append(SPAN_CLOSE);
       $(".todo-list").append(listItem);
-      USER_INPUT.val("");
+      $("#userInput").val("");
     }
   });
 
