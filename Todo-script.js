@@ -1,33 +1,77 @@
 $(document).ready(() => {
-  // $("li:eq(2)") // Ovo će izabrati treći <li> element (indeks 2)
-
   const SPAN_CLOSE = "<span class='close'>\u00D7</span>";
   const POPOUP_TIME = 1500;
   const POPUP_ERROR = "<div class='error-popup'>";
   const ERROR_MESSAGE = "You must enter something on To-do list";
   const CLEAR_LIST_MESSAGE = "List is clear!";
-
   const TODO_LIST = $(".todo-list");
-  const ADD_BTN = $(".add-btn");
-  const CLEAR_LIST_BTN = $("#clearList");
 
-  // Funkcija za ažuriranje Local Storage
-  // function updateLocalStorage() {
-  //   localStorage.setItem("todoList", JSON.stringify(todoItems));
-  // }
-  function updateLocalStorage() {
-    const storageData = {};
+  const storedTodoList = localStorage.getItem("todoList");
+  todoItems = [];
+  if (storedTodoList) {
+    todoItems = JSON.parse(storedTodoList);
+
     for (const item of todoItems) {
-      storageData[item.task] = item.completed;
+      const listItem = $("<li>").text(item.task).append(SPAN_CLOSE);
+      if (item.completed) {
+        listItem.addClass("checked");
+      }
+      TODO_LIST.append(listItem);
     }
-    localStorage.setItem("todoList", JSON.stringify(storageData));
   }
 
-  // Funkcija za prikazivanje poruke o grešci
+  $(".todo-list")
+    .find("li")
+    .each(function () {
+      $(this).append(SPAN_CLOSE);
+    });
+
+  $(".todo-list").on("click", ".close", function (event) {
+    const PARENT_li = $(event.currentTarget).parent();
+    const INDEX = PARENT_li.index();
+    if (INDEX !== -1) {
+      todoItems.splice(INDEX, 1);
+      PARENT_li.remove();
+      updateLocalStorage(todoItems);
+    } else {
+      console.error("Index not found.");
+    }
+  });
+
+  $(".todo-list").on("click", "li", (event) => {
+    const clickedItem = $(event.currentTarget);
+    const index = $(".todo-list").find("li").index(clickedItem);
+    if (index !== -1 && index < todoItems.length) {
+      todoItems[index].completed = !todoItems[index].completed;
+      clickedItem.toggleClass("checked");
+      updateLocalStorage(todoItems);
+    } else {
+      console.error(
+        "Invalid index or the item has been deleted or does not exist."
+      );
+    }
+  });
+
+  $(".add-btn").click(() => {
+    const INPUT_VALUE = $("#userInput").val();
+    if (!INPUT_VALUE) {
+      showError(ERROR_MESSAGE);
+    } else {
+      var listItem = $("<li>").text(INPUT_VALUE).append(SPAN_CLOSE);
+      $(".todo-list").append(listItem);
+      $("#userInput").val("");
+      const newItem = {
+        task: INPUT_VALUE,
+        completed: false,
+      };
+      todoItems.push(newItem);
+    }
+    updateLocalStorage(todoItems);
+  });
+
   function showError(message) {
     const ERROR_POPUP = $(POPUP_ERROR).text(message);
     $("body").append(ERROR_POPUP);
-
     setTimeout(() => {
       ERROR_POPUP.fadeOut(() => {
         $(this).remove();
@@ -35,75 +79,13 @@ $(document).ready(() => {
     }, POPOUP_TIME);
   }
 
-  // DODAJEM NOVU STAVKU
-  function addNewItem(TASK_TEXT) {
-    const NEW_ITEM = {
-      task: TASK_TEXT,
-      completed: false,
-    };
-    todoItems.push(NEW_ITEM);
-    const LIST_ITEM = $("<li>").text(TASK_TEXT).append(SPAN_CLOSE);
-    TODO_LIST.append(LIST_ITEM);
-    $("#userInput").val("");
-    updateLocalStorage();
-  }
-
-  // daj AKO IMA STA todo u Local Storage
-  const STORED_TODO_LIST = localStorage.getItem("todoList");
-  let todoItems = [];
-  if (STORED_TODO_LIST) {
-    todoItems = JSON.parse(STORED_TODO_LIST);
-    // Prikazivanje postojećih stavki iz Local Storage
-    for (const ITEM of todoItems) {
-      const LIST_ITEM = $("<li>").text(ITEM.task).append(SPAN_CLOSE);
-
-      // "checked"
-      if (ITEM.completed) {
-        LIST_ITEM.addClass("checked");
-      }
-      TODO_LIST.append(LIST_ITEM);
-    }
-  }
-
-  // Označavanje stavke kao "checked" i ažuriranje Local Storage-a
-  TODO_LIST.on("click", "li", (event) => {
-    const LIST_ITEM = $(event.currentTarget);
-    LIST_ITEM.toggleClass("checked"); // Dodajemo/uklanjamo klasu "checked"
-    console.log(`Item clicked: ${LIST_ITEM.text()}`);
-
-    // Ažuriramo Local Storage za ovu stavku
-    const TASK_TEXT2 = LIST_ITEM.text();
-    const INDEX = todoItems.findIndex((item) => item.task === TASK_TEXT2);
-    if (INDEX !== -1) {
-      todoItems[INDEX].completed = LIST_ITEM.hasClass("checked");
-      // console.log(`Updated status for item: ${TASK_TEXT2}, completed: ${todoItems[INDEX].completed}`);
-      updateLocalStorage();
-    }
-  });
-
-  // Funkcija za brisanje stavke
-  TODO_LIST.on("click", ".close", (event) => {
-    $(event.currentTarget).parent().toggle();
-
-    updateLocalStorage();
-  });
-
-  // Dodavanje nove stavke na klik dugmeta "Add"
-  ADD_BTN.click(() => {
-    const INPUT_VALUE = $("#userInput").val();
-    if (!INPUT_VALUE) {
-      showError(ERROR_MESSAGE);
-    } else {
-      addNewItem(INPUT_VALUE);
-      //ovde bih dodao da prebaci completed value true
-    }
-  });
-
-  // Funkcija za brisanje cele liste kada korisnik klikne na dugme "Clear List"
-  CLEAR_LIST_BTN.click(() => {
-    TODO_LIST.empty(); // Očistimo celu listu
-    // Očistimo Local Storage
+  $("#clearList").click(() => {
+    $(".todo-list").empty();
     localStorage.removeItem("todoList");
-    showError(CLEAR_LIST_MESSAGE); // Prikazujemo poruku
+    showError(CLEAR_LIST_MESSAGE);
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   });
+  updateLocalStorage(todoItems);
 });
