@@ -6,17 +6,17 @@ $(document).ready(() => {
   const CLEAR_LIST_MESSAGE = "List is clear!";
   const TODO_LIST = $(".todo-list");
 
-  const storedTodoList = localStorage.getItem("todoList");
+  const STORED_TODO_LIST = localStorage.getItem("todoList");
   todoItems = [];
-  if (storedTodoList) {
-    todoItems = JSON.parse(storedTodoList);
+  if (STORED_TODO_LIST) {
+    todoItems = JSON.parse(STORED_TODO_LIST);
 
     for (const item of todoItems) {
-      const listItem = $("<li>").text(item.task).append(SPAN_CLOSE);
+      const LIST_ITEM = $("<li>").text(item.task).append(SPAN_CLOSE);
       if (item.completed) {
-        listItem.addClass("checked");
+        LIST_ITEM.addClass("checked");
       }
-      TODO_LIST.append(listItem);
+      TODO_LIST.append(LIST_ITEM);
     }
   }
 
@@ -39,11 +39,11 @@ $(document).ready(() => {
   });
 
   $(".todo-list").on("click", "li", (event) => {
-    const clickedItem = $(event.currentTarget);
-    const index = $(".todo-list").find("li").index(clickedItem);
-    if (index !== -1 && index < todoItems.length) {
-      todoItems[index].completed = !todoItems[index].completed;
-      clickedItem.toggleClass("checked");
+    const CLICKED_ITEM = $(event.currentTarget);
+    const INDEX = $(".todo-list").find("li").index(CLICKED_ITEM);
+    if (INDEX !== -1 && INDEX < todoItems.length) {
+      todoItems[INDEX].completed = !todoItems[INDEX].completed;
+      CLICKED_ITEM.toggleClass("checked");
       updateLocalStorage(todoItems);
     } else {
       console.error(
@@ -60,11 +60,11 @@ $(document).ready(() => {
       var listItem = $("<li>").text(INPUT_VALUE).append(SPAN_CLOSE);
       $(".todo-list").append(listItem);
       $("#userInput").val("");
-      const newItem = {
+      const NEW_ITEM = {
         task: INPUT_VALUE,
         completed: false,
       };
-      todoItems.push(newItem);
+      todoItems.push(NEW_ITEM);
     }
     updateLocalStorage(todoItems);
   });
