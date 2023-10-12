@@ -69,15 +69,7 @@ $(document).ready(() => {
     updateLocalStorage(todoItems);
   });
 
-  function showError(message) {
-    const ERROR_POPUP = $(POPUP_ERROR).text(message);
-    $("body").append(ERROR_POPUP);
-    setTimeout(() => {
-      ERROR_POPUP.fadeOut(() => {
-        $(this).remove();
-      });
-    }, POPOUP_TIME);
-  }
+  function showError(message);
 
   $("#clearList").click(() => {
     $(".todo-list").empty();
