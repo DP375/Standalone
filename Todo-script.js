@@ -1,15 +1,19 @@
+const POPUP_ERROR = "<div class='error-popup'>";
+const POPOUP_TIME = 1500;
+const CL_ERROR = "Item not found";
+const CHILL = "You have nothing to do";
+let todoItems = [];
 $(document).ready(() => {
   const SPAN_CLOSE = "<span class='close'>\u00D7</span>";
-  const POPOUP_TIME = 1500;
-  const POPUP_ERROR = "<div class='error-popup'>";
   const ERROR_MESSAGE = "You must enter something on To-do list";
   const CLEAR_LIST_MESSAGE = "List is clear!";
   const TODO_LIST = $(".todo-list");
-
   const STORED_TODO_LIST = localStorage.getItem("todoList");
-  todoItems = [];
-  if (STORED_TODO_LIST) {
-    todoItems = JSON.parse(STORED_TODO_LIST);
+
+  if (!STORED_TODO_LIST) {
+    showError(CHILL);
+  } else {
+    todoItems = parseJson(STORED_TODO_LIST);
 
     for (const item of todoItems) {
       const LIST_ITEM = $("<li>").text(item.task).append(SPAN_CLOSE);
@@ -27,28 +31,29 @@ $(document).ready(() => {
     });
 
   $(".todo-list").on("click", ".close", function (event) {
-    const PARENT_li = $(event.currentTarget).parent();
-    const INDEX = PARENT_li.index();
-    if (INDEX !== -1) {
+    const PARENT_LI = $(event.currentTarget).closest("li");
+    const INDEX = PARENT_LI.index();
+
+    if (INDEX !== -1 < todoItems.length) {
       todoItems.splice(INDEX, 1);
-      PARENT_li.remove();
+      PARENT_LI.remove();
+
       updateLocalStorage(todoItems);
     } else {
-      console.error("Index not found.");
+      showError(CL_ERROR);
     }
   });
 
   $(".todo-list").on("click", "li", (event) => {
     const CLICKED_ITEM = $(event.currentTarget);
     const INDEX = $(".todo-list").find("li").index(CLICKED_ITEM);
-    if (INDEX !== -1 && INDEX < todoItems.length) {
+    if (INDEX !== -1) {
       todoItems[INDEX].completed = !todoItems[INDEX].completed;
       CLICKED_ITEM.toggleClass("checked");
       updateLocalStorage(todoItems);
     } else {
-      console.error(
-        "Invalid index or the item has been deleted or does not exist."
-      );
+      // Is this an acceptable action to take?
+      showError("Item has been deleted");
     }
   });
 
@@ -68,8 +73,6 @@ $(document).ready(() => {
     }
     updateLocalStorage(todoItems);
   });
-
-  function showError(message);
 
   $("#clearList").click(() => {
     $(".todo-list").empty();
