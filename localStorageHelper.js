@@ -1,18 +1,20 @@
 function updateLocalStorage(todoItems) {
-  localStorage.setItem("todoList", stringifyJson(todoItems));
+  localStorage.setItem(TODO_STORAGE_KEY, stringifyJson(todoItems));
 }
 
 function clearUsersFromLocalStorage(todoItems) {
-  localStorage.removeItem("todoList");
+  localStorage.removeItem(TODO_STORAGE_KEY);
   updateLocalStorage(todoItems);
 }
 
-function showError(message) {
-  const ERROR_POPUP = $(POPUP_ERROR).text(message);
-  $("body").append(ERROR_POPUP);
-  setTimeout(() => {
-    ERROR_POPUP.fadeOut(() => {
-      $(this).remove();
-    });
-  }, POPOUP_TIME);
+function removeFromLocalStorage(k) {
+  localStorage.removeItem(k);
+}
+
+function addItemToList(todoItems, itemText) {
+  const NEW_ITEM = {
+    task: itemText,
+    completed: false,
+  };
+  todoItems.push(NEW_ITEM);
 }
