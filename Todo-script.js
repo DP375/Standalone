@@ -1,18 +1,56 @@
+const TODO_STORAGE_KEY = "todoList";
+const POPUP_ERROR = "<div class='error-popup'>";
+const POPOUP_TIME = 1500;
+const CL_ERROR = "Item not found";
+const CHILL = "You have nothing to do";
+const ERROR_MESSAGE = "You must enter something on To-do list";
+const CLEAR_LIST_MESSAGE = "List is clear!";
+let todoItems = [];
 $(document).ready(() => {
   const SPAN_CLOSE = "<span class='close'>\u00D7</span>";
-  const POPOUP_TIME = 1500;
-  const POPUP_ERROR = "<div class='error-popup'>";
-  const ERROR_MESSAGE = "You must enter something on To-do list";
+  const TODO_LIST = $(".todo-list");
+  const STORED_TODO_LIST = localStorage.getItem(TODO_STORAGE_KEY);
 
-  const todoList = $(".todo-list");
-  todoList.find("li").each((element) => $(element).append(SPAN_CLOSE));
+  if (!STORED_TODO_LIST) {
+    showError(CHILL);
+  } else {
+    todoItems = parseJson(STORED_TODO_LIST);
 
-  todoList.on("click", ".close", (event) => {
-    $(event.currentTarget).parent().toggle();
+    for (const item of todoItems) {
+      const LIST_ITEM = $("<li>").text(item.task).append(SPAN_CLOSE);
+      if (item.completed) {
+        LIST_ITEM.addClass("checked");
+      }
+      TODO_LIST.append(LIST_ITEM);
+    }
+  }
+
+  $(".todo-list")
+    .find("li")
+    .each((index, element) => $(element).append(SPAN_CLOSE));
+
+  $(".todo-list").on("click", ".close", function (event) {
+    const PARENT_LI = $(event.currentTarget).closest("li");
+    const INDEX = PARENT_LI.index();
+
+    if (INDEX !== -1 && INDEX < todoItems.length) {
+      todoItems.splice(INDEX, 1);
+      PARENT_LI.remove();
+
+      updateLocalStorage(todoItems);
+    } else {
+      showError(CL_ERROR);
+    }
   });
 
-  todoList.on("click", "li", (event) => {
-    $(event.currentTarget).toggleClass("checked");
+  $(".todo-list").on("click", "li", (event) => {
+    const CLICKED_ITEM = $(event.currentTarget);
+    const INDEX = $(".todo-list").find("li").index(CLICKED_ITEM);
+    if (INDEX !== -1) {
+      todoItems[INDEX].completed = !todoItems[INDEX].completed;
+      CLICKED_ITEM.toggleClass("checked");
+      updateLocalStorage(todoItems);
+    }
   });
 
   $(".add-btn").click(() => {
@@ -23,21 +61,18 @@ $(document).ready(() => {
       var listItem = $("<li>").text(INPUT_VALUE).append(SPAN_CLOSE);
       $(".todo-list").append(listItem);
       $("#userInput").val("");
+      addItemToList(todoItems, INPUT_VALUE);
     }
+    updateLocalStorage(todoItems);
   });
-
-  function showError(message) {
-    const ERROR_POPUP = $(POPUP_ERROR).text(message);
-    $("body").append(ERROR_POPUP);
-
-    setTimeout(() => {
-      ERROR_POPUP.fadeOut(() => {
-        $(this).remove();
-      });
-    }, POPOUP_TIME);
-  }
 
   $("#clearList").click(() => {
-    todoList.empty();
+    $(".todo-list").empty();
+    removeFromLocalStorage(TODO_STORAGE_KEY);
+    showError(CLEAR_LIST_MESSAGE);
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   });
+  updateLocalStorage(todoItems);
 });
